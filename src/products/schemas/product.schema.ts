@@ -29,6 +29,12 @@ export class Product {
     default: 0
   })
   quantity: number;
+
+  @Prop({
+    type: Boolean,
+    default: true
+  })
+  active: boolean
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

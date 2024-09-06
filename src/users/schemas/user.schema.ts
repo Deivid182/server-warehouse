@@ -27,11 +27,11 @@ export class User {
   refreshToken?: string;
 
   @Prop({
-    type: Number,
-    enum: [0, 1],
-    default: 1,
+    type: String,
+    enum: ['warehouseman', 'employee'],
+    default: 'employee',
   })
-  role: number;
+  role: 'warehouseman' | 'employee';
 
   @Prop({
     type: String,

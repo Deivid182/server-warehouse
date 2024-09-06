@@ -10,7 +10,7 @@ import { User, UserSchema } from './schemas/user.schema';
       {
         name: User.name,
         schema: UserSchema
-      }
+      },
     ])
   ],
   controllers: [UsersController],
