@@ -14,6 +14,6 @@ async function bootstrap() {
     }),
   );
   app.use(cookieParser());
-  await app.listen(envs.port);
+  await app.listen(process.env.PORT);
 }
 bootstrap();
