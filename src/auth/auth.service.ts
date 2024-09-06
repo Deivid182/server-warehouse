@@ -81,13 +81,11 @@ export class AuthService {
       const userFound = await this.usersService.findUser({ email });
 
       const auth = await compare(password, userFound.password);
-      console.log(auth, 'auth')
       if (!auth) {
         throw new UnauthorizedException();
       }
       return userFound;
     } catch (error) {
-      console.log(error, 'validateCredentials')
       throw new UnauthorizedException('Unauthorized');
     }
   }
@@ -96,9 +94,7 @@ export class AuthService {
     try {
       const userFound = await this.usersService.findUser({ _id: userId });
       const auth = await compare(refreshToken, userFound.refreshToken);
-      console.log(auth, 'authenticated 1')
       if(auth === false){
-        console.log(auth, 'authenticated 2')
         throw new UnauthorizedException();
       }
       return userFound;

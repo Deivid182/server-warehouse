@@ -38,7 +38,6 @@ export class ProductsService {
 
   async findOne(id: string) {
     const productFound = await this.productModel.findOne({ _id: id, active: true })
-    console.log(productFound)
     if(!productFound) {
       throw new NotFoundException('Product not found')
     }
