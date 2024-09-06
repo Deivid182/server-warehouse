@@ -1,7 +1,7 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { AuthPayloadDto } from './dto/authpayload.dto';
 import { UsersService } from 'src/users/users.service';
-import { compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/schemas/user.schema';
@@ -27,19 +27,46 @@ export class AuthService {
         ),
     );
 
+    const expireRefreshToken = new Date();
+    expireRefreshToken.setMilliseconds(
+      expireRefreshToken.getTime() +
+        parseInt(
+          this.configService.getOrThrow<string>(
+            'JWT_REFRESH_TOKEN_EXPIRATION_MS',
+          ),
+        ),
+    );
+
+    console.log('expireAccessToken', expireAccessToken)
+
     const tokenPayload: TokenPayload = {
-      userId: user._id.toString(),
+      userId: user._id.toHexString(),
     };
 
     const accessToken = this.jwtService.sign(tokenPayload, {
-      secret: this.configService.getOrThrow('JWT_SECRET'),
+      secret: this.configService.getOrThrow('JWT_ACCESS_TOKEN_SECRET'),
       expiresIn: `${this.configService.getOrThrow('JWT_ACCESS_TOKEN_EXPIRATION_MS')}ms`,
     });
 
-    response.cookie('auth', accessToken, {
+    const refreshToken = this.jwtService.sign(tokenPayload, {
+      secret: this.configService.getOrThrow('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${this.configService.getOrThrow('JWT_REFRESH_TOKEN_EXPIRATION_MS')}ms`
+    })
+
+    await this.usersService.updateUser(
+      { _id: user._id },
+      { $set: { refreshToken: await hash(refreshToken, 10) } }
+    )
+
+    response.cookie('Authentication', accessToken, {
       httpOnly: true,
       secure: this.configService.get('NODE_ENV') === 'production',
       expires: expireAccessToken
+    })
+    response.cookie('Refresh', refreshToken, {
+      httpOnly: true,
+      secure: this.configService.get('NODE_ENV') === 'production',
+      expires: expireRefreshToken
     })
   }
 
@@ -48,13 +75,44 @@ export class AuthService {
       const userFound = await this.usersService.findUser({ email });
 
       const auth = await compare(password, userFound.password);
+      console.log(auth, 'auth')
       if (!auth) {
         throw new UnauthorizedException();
       }
       return userFound;
     } catch (error) {
-      console.log(error)
+      console.log(error, 'validateCredentials')
       throw new UnauthorizedException('Unauthorized');
+    }
+  }
+
+  async validateUserRefreshToken(refreshToken: string, userId: string) {
+    try {
+      const userFound = await this.usersService.findUser({ _id: userId });
+      const auth = await compare(refreshToken, userFound.refreshToken);
+      console.log(auth, 'authenticated 1')
+      if(auth === false){
+        console.log(auth, 'authenticated 2')
+        throw new UnauthorizedException();
+      }
+      return userFound;
+    } catch (error) {
+      throw new UnauthorizedException("RefreshToken not valid");
+    }
+  }
+
+  async invalidateJWT(userId: string, response: Response) {
+    try {
+      const userFound = await this.usersService.findUser({ _id: userId });
+      await this.usersService.updateUser(
+        { _id: userFound._id },
+        { $set: { refreshToken: null } }
+      );
+      response.clearCookie('Authentication')
+      response.clearCookie('Refresh')
+      return response.end()
+    } catch (error) {
+      throw new BadRequestException(error.message);
     }
   }
 }

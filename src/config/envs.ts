@@ -3,13 +3,13 @@ import * as joi from "joi"
 
 interface EnvVars {
   PORT: number
-  JWT_SECRET: string
+  JWT_ACCESS_TOKEN_SECRET: string
   MONGODB_URI: string
 }
 
 const envSchema = joi.object({
   PORT: joi.number().required(),
-  JWT_SECRET: joi.string().required(),
+  JWT_ACCESS_TOKEN_SECRET: joi.string().required(),
 }).unknown(true)
 
 const { error, value: envValues } = envSchema.validate(process.env)
@@ -22,6 +22,6 @@ const envVars = envValues as EnvVars
 
 export const envs = {
   port: envVars.PORT,
-  jwtSecret: envVars.JWT_SECRET,
+  jwtSecret: envVars.JWT_ACCESS_TOKEN_SECRET,
   mongodbUri: envVars.MONGODB_URI
 }

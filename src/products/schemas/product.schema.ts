@@ -5,9 +5,7 @@ import { SchemaTypes, Types } from "mongoose";
   timestamps: true
 })
 
-
-
-export class User {
+export class Product {
   @Prop({
     type: SchemaTypes.ObjectId,
     auto: true
@@ -16,28 +14,21 @@ export class User {
 
   @Prop({
     type: String,
-    unique: true,
     required: true
   })
-  email: string;
-
-  @Prop({
-    type: String,
-  })
-  refreshToken?: string;
+  name: string;
 
   @Prop({
     type: Number,
-    enum: [0, 1],
-    default: 1,
-  })
-  role: number;
-
-  @Prop({
-    type: String,
     required: true
   })
-  password: string;
+  price: number;
+
+  @Prop({
+    type: Number,
+    default: 0
+  })
+  quantity: number;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const ProductSchema = SchemaFactory.createForClass(Product);
