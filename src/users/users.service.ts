@@ -10,15 +10,15 @@ export class UsersService {
   constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {}
 
   async registerUser(registerDto: RegisterDto) {
-    const userFound = await this.findUser({ email: registerDto.email })
+    const userFound = await this.userModel.findOne({ email: registerDto.email })
     if(userFound) {
       throw new BadRequestException('User already exists')
     }
-    const user = await new this.userModel({
+    const user = new this.userModel({
       ...registerDto,
       password: await hash(registerDto.password, 10)
     }).save();
-    const { password, ...userWithoutPassword } = user.toObject();
+    const { password, ...userWithoutPassword } = (await user).toObject()
 
     return userWithoutPassword
   }

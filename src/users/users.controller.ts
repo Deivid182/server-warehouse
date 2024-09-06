@@ -10,13 +10,8 @@ import { User } from './schemas/user.schema';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Post()
-  async createUser(@Res() response: Response, @Body() registerDto: RegisterDto) {
-    const userCreated = await this.usersService.registerUser(registerDto);
-    return response.status(HttpStatus.CREATED).json({
-      message: 'User registered successfully',
-      data: userCreated,
-      success: true
-    })
+  async createUser(@Body() registerDto: RegisterDto) {
+    return this.usersService.registerUser(registerDto);
   }
 
   @Get()
