@@ -37,8 +37,6 @@ export class AuthService {
         ),
     );
 
-    console.log('expireAccessToken', expireAccessToken)
-
     const tokenPayload: TokenPayload = {
       userId: user._id.toHexString(),
     };
@@ -67,6 +65,14 @@ export class AuthService {
       httpOnly: true,
       secure: this.configService.get('NODE_ENV') === 'production',
       expires: expireRefreshToken
+    })
+    response.status(200).json({
+      message: 'User logged in successfully',
+      data: {
+        role: user.role,
+        email: user.email
+      },
+      success: true
     })
   }
 
