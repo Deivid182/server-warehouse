@@ -46,6 +46,7 @@
     "@flydotio/dockerfile": "^0.5.8",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
+    "@nestjs/swagger": "^7.4.0",
     "@nestjs/testing": "^10.0.0",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.7",

@@ -8,16 +8,18 @@ import { UpdateProductQuantityDto } from './dto/update-product.quantity.dto';
 import { Roles } from 'src/auth/roles/roles.decorator';
 import { RoleGuard } from 'src/auth/role/role.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('products')
+@ApiTags('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
   validateMongoId(id: string) {
     return isValidObjectId(id);
   }
+  @Post()
   @Roles('warehouseman')
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Post()
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
