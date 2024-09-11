@@ -4,6 +4,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Model } from 'mongoose';
 import { Product } from './schemas/product.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { UpdateProductQuantityDto } from './dto/update-product.quantity.dto';
 
 @Injectable()
 export class ProductsService {
@@ -49,9 +50,9 @@ export class ProductsService {
     return this.productModel.findByIdAndUpdate(id, updateProductDto, { new: true })
   }
 
-  async updateQuantity(id: string, quantity: number) {
+  async updateQuantity(id: string, updateProductQuantityDto: UpdateProductQuantityDto) {
     await this.findOne(id)
-    return this.productModel.findByIdAndUpdate(id, { quantity }, { new: true })
+    return this.productModel.findByIdAndUpdate(id, { quantity: updateProductQuantityDto.quantity }, { new: true })
   }
 
   async remove(id: string) {

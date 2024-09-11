@@ -69,7 +69,8 @@ export class ProductsController {
     if (!this.validateMongoId(id)) {
       throw new BadRequestException(`Invalid MongoDB ID: ${id}`);
     }
-    return this.productsService.updateQuantity(id, updateQuantyDto.quantity);
+    console.log(updateQuantyDto)
+    return this.productsService.updateQuantity(id, updateQuantyDto);
   }
 
   @Roles('warehouseman')
