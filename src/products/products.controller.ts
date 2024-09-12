@@ -6,7 +6,7 @@ import { Product } from './schemas/product.schema';
 import { isValidObjectId } from 'mongoose';
 import { UpdateProductQuantityDto } from './dto/update-product.quantity.dto';
 import { Roles } from 'src/auth/roles/roles.decorator';
-import { RoleGuard } from 'src/auth/role/role.guard';
+import { RoleGuard } from 'src/auth/guards/role.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 

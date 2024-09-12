@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: configService.getOrThrow("JWT_ACCESS_TOKEN_SECRET"),
     })
   }
-
+  // Involves checking the digital signature of the JWT to ensure its integrity and validating claims to determine the user’s identity and permissions.
   async validate(payload: TokenPayload) {
     return this.usersService.findUser({ _id: payload.userId })
   }
